@@ -1,0 +1,23 @@
+Source: wmtime
+Section: x11
+Priority: optional
+Maintainer: Fredrik Hallenberg <hallon@debian.org>
+Standards-Version: 2.4.1
+
+Package: wmtime
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Displays time and date
+ WMTime, guess what, displays the time and date and gives you
+ some nice additional features too...
+ .
+ WMTime currently provides:
+ .
+   * Time and date;
+   * Realtime morphing UI (analog <> digital mode);
+   * Autoscaling and anti aliased hands;
+   * Locale, can display DAY and DATE in various languages;
+   * Can lauch 3 user definable commands through ~/.wmtimerc;
+   * Can be run multiple times;
+   * Commandline options for help (-h), version (-v), digital
+     clock mode (-digital) and and display (-d);

@@ -1,0 +1,10 @@
+wmtime (1.0b2-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Wed, 15 Jul 1998 18:18:07 +0200
+
+Local variables:
+mode: debian-changelog
+add-log-mailing-address: "hallon@debian.org"
+End:
