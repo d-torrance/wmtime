@@ -2,4 +2,4 @@
   needs=X11\
   section=Apps/Tools hints="Clocks"\
   title="wmtime"\
-  command="/usr/X11R6/bin/wmtime"
+  command="/usr/bin/wmtime"

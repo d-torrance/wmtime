@@ -27,7 +27,7 @@ install-stamp: build-stamp
 	dh_clean -k
 	dh_installdirs
 
-	install -m 755 wmtime/wmtime `pwd`/debian/tmp/usr/X11R6/bin
+	install -m 755 wmtime/wmtime `pwd`/debian/tmp/usr/bin
 
 	touch install-stamp
 
@@ -41,8 +41,8 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installmenu
-	dh_installdocs BUGS HINTS INSTALL README TODO
-	dh_undocumented wmtime.1x
+	dh_installdocs BUGS HINTS README TODO
+	dh_undocumented wmtime.1
 	dh_installchangelogs CHANGES
 	dh_strip
 	dh_compress

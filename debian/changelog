@@ -1,3 +1,16 @@
+wmtime (1.0b2-5) unstable; urgency=low
+
+  * Forgot to update menu entry with new path (closes: #142461)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Fri, 12 Apr 2002 17:58:04 +0200
+
+wmtime (1.0b2-4) unstable; urgency=low
+
+  * Install in /usr/bin instead of /usr/X11R6/bin (closes: #122023)
+  * Recompile fixes dependencies (closes: #132386)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Thu, 11 Apr 2002 18:20:07 +0200
+
 wmtime (1.0b2-3) frozen unstable; urgency=low
 
   * Fixed monthname (NOV instead of NOW).
@@ -17,8 +30,3 @@ wmtime (1.0b2-1) unstable; urgency=low
   * Initial Release.
 
  -- Fredrik Hallenberg <hallon@debian.org>  Wed, 15 Jul 1998 18:18:07 +0200
-
-Local variables:
-mode: debian-changelog
-add-log-mailing-address: "hallon@debian.org"
-End:
