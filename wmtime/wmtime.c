@@ -26,6 +26,11 @@
 	----
 	Changes:
 	----
+	09/10/2003 (Simon Law, sfllaw@debian.org)
+		* Add -geometry support
+		* Add -noseconds support
+		* Make the digital clock fill the space provided
+		* Eliminated exploitable static buffers
 	17/05/1998 (Antoine Nulle, warp@xs4all.nl)
 		* Updated version number and some other minor stuff
 	16/05/1998 (Antoine Nulle, warp@xs4all.nl)
@@ -50,6 +55,7 @@
 		* Copied the source from wmmon.
 */
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -86,55 +92,63 @@
  /* Global Variables */
 /********************/
 
-char	*ProgName;
 int		digital = 0;
+int		noseconds = 0;
 char	day_of_week[7][3] = { "SU", "MO", "TU", "WE", "TH", "FR", "SA" };
 char	mon_of_year[12][4] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
 
 /* functions */
-void usage(void);
+void usage(char *);
 void printversion(void);
 
 void wmtime_routine(int, char **);
 void get_lang();
 
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
 	int		i;
-	
+	char    *name = argv[0];
 
-	/* Parse Command Line */
-
-	ProgName = argv[0];
-	if (strlen(ProgName) >= 6)
-		ProgName += (strlen(ProgName) - 6);
-	
 	for (i=1; i<argc; i++) {
 		char *arg = argv[i];
 
 		if (*arg=='-') {
 			switch (arg[1]) {
 			case 'd' :
-				if (strcmp(arg+1, "display") && strcmp(arg+1, "digital")) {
-					usage();
-					exit(1);
+				if (strcmp(arg+1, "display")
+				    && strcmp(arg+1, "digital") && strcmp(arg+1, "d")) {
+					usage(name);
+					return 1;
 				}
-				if (!strcmp(arg+1, "digital"))
+				if (!strcmp(arg+1, "digital") || !(strcmp(arg+1, "d")))
 					digital = 1;
+				break;
+			case 'g' :
+				if (strcmp(arg+1, "geometry")) {
+					usage(name);
+					return 1;
+				}
+				break;
+			case 'n' :
+				if (strcmp(arg+1, "noseconds") && strcmp(arg+1, "n")) {
+					usage(name);
+					return 1;
+				} else {
+					noseconds = 1;
+				}
 				break;
 			case 'v' :
 				printversion();
-				exit(0);
-				break;
+				return 0;
 			default:
-				usage();
-				exit(0);
-				break;
+				usage(name);
+				return 1;
 			}
 		}
 	}
 	get_lang();
 	wmtime_routine(argc, argv);
+	return 0;
 }
 
 /************/
@@ -143,19 +157,22 @@ void main(int argc, char *argv[]) {
 void get_lang(){
    FILE *fp;
    int i;
-   char temp[5];
+   const int line_size = 5;
+   char line[line_size];
    
    fp=fopen("language","r");
    if (fp) {
+	   /* Grab the days of the week */
        for (i=0;i<7;i++){
-	   fgets(temp,4,fp);
-	   strncpy(day_of_week[i],temp,2);
+		   fgets(line, line_size, fp);
+		   strncpy(day_of_week[i], line, 2);
        };
+	   /* Grab the names of the months */
        for (i=0;i<12;i++){
-	   fgets(temp,5,fp);
-	   strncpy(mon_of_year[i],temp,3);
+		   fgets(line, line_size, fp);
+		   strncpy(mon_of_year[i], line, 3);
        };
-   	fclose(fp);
+	   fclose(fp);
     };
 }
 
@@ -191,42 +208,38 @@ void wmtime_routine(int argc, char **argv) {
 	long		curtime;
 	long		nexttime;
 
-	char		temp[128];
-	char		*p;
+	char		*conffile = NULL;
 
 	/* Scan through ~/.wmtimerc for the mouse button actions. */
 	if (LEFT_ACTION) left_action = strdup(LEFT_ACTION);
 	if (MIDDLE_ACTION) middle_action = strdup(MIDDLE_ACTION);
 	if (RIGHT_ACTION) right_action = strdup(RIGHT_ACTION);
 
-	/* Scan throught  the .rc files */
-	strcpy(temp, "/etc/wmtimerc");
-	parse_rcfile(temp, wmtime_keys);
+	/* Scan through the .rc files */
+	if (asprintf(&conffile, "/etc/wmtimerc") >= 0) {
+		parse_rcfile(conffile, wmtime_keys);
+		free(conffile);
+	}
 
-	p = getenv("HOME");
-	strcpy(temp, p);
-	strcat(temp, "/.wmtimerc");
-	parse_rcfile(temp, wmtime_keys);
+	if (asprintf(&conffile, "%s/.wmtimerc", getenv("HOME")) >= 0) {
+		parse_rcfile(conffile, wmtime_keys);
+		free(conffile);
+	}
 
-	strcpy(temp, "/etc/wmtimerc.fixed");
-	parse_rcfile(temp, wmtime_keys);
-
+	if (asprintf(&conffile, "/etc/wmtimerc.fixed") >= 0) {
+		parse_rcfile(conffile, wmtime_keys);
+		free(conffile);
+	}
 
 	openXwindow(argc, argv, wmtime_master_xpm, wmtime_mask_bits, 128, 64);
 
-	copyXPMArea(0, 0, 128, 64, 0, 98);
-
-        copyXPMArea(0, 0, 64, 64, 64, 0);
+	/* Mask out the right parts of the clock */
+	copyXPMArea(0, 0, 128, 64, 0, 98);   /* Draw the borders */
+	copyXPMArea(0, 0, 64, 64, 64, 0);    /* Draw the clock face */
+	copyXPMArea(64, 98, 64, 64, 0, 0);   /* Draw the LCD background */
 	setMaskXY(0, 0);
-        if (digital) {
-		copyXPMArea(64, 0, 64, 64, 0, 0);
-		setMaskXY(-64, 0);
-	} else {
-		copyXPMArea(0, 0, 64, 64, 64, 0);
-		setMaskXY(0, 0);
-	}
 
-        /* add mouse region */
+    /* add mouse region */
 	AddMouseRegion(0, 5, 48, 58, 60);
 	AddMouseRegion(1, 5, 5, 58, 46);
 
@@ -285,12 +298,10 @@ void wmtime_routine(int argc, char **argv) {
 
 						if (digital) {
 							copyXPMArea(64, 98, 64, 64, 0, 0);
-							setMaskXY(-64, 0);
 							DrawTime(time_struct->tm_hour, time_struct->tm_min, time_struct->tm_sec);
 							DrawDate(time_struct->tm_wday, time_struct->tm_mday, time_struct->tm_mon);
 						} else {
 							copyXPMArea(0, 98, 64, 64, 0, 0);	
-						        setMaskXY(0, 0);
 							DrawWijzer(time_struct->tm_hour, time_struct->tm_min, time_struct->tm_sec);
 							DrawDate(time_struct->tm_wday, time_struct->tm_mday, time_struct->tm_mon);
 						}
@@ -327,24 +338,28 @@ void wmtime_routine(int argc, char **argv) {
 \*******************************************************************************/
 
 void DrawTime(int hr, int min, int sec) {
-
-	
-	char	temp[16];
-	char	*p = temp;
+	const int time_size = 16;
+	char	time[time_size];
+	char	*p = time;
 	int		i,j,k=6;
 
 	/* 7x13 */
 
-	sprintf(temp, "%02d:%02d:%02d ", hr, min, sec);
+	if (noseconds) {
+		snprintf(time, time_size, "%02d:%02d ", hr, min);
+	}
+	else {
+		snprintf(time, time_size, "%02d:%02d:%02d ", hr, min, sec);
+	}
 
-	for (i=0; i<3; i++) {
+	for (i=0; i < 3; i++) {
 		for (j=0; j<2; j++) {
-			copyXPMArea((*p-'0')*7 + 1, 84, 8, 13, k, 6);
+			copyXPMArea((*p-'0')*7 + 1, 84, 8, 13, k, 18);
 			k += 7;
 			p++;
 		}
 		if (*p == ':') {
-			copyXPMArea(71, 84, 5, 13, k, 6);
+			copyXPMArea(71, 84, 5, 13, k, 18);
 			k += 4;
 			p++;
 		}
@@ -356,15 +371,15 @@ void DrawTime(int hr, int min, int sec) {
 \*******************************************************************************/
 
 void DrawDate(int wkday, int dom, int month) {
-
-	
-	char	temp[16];
-	char	*p = temp;
+	const int date_size = 16;
+	char	date[date_size];
+	char	*p = date;
 	int		i,k;
 
 	/* 7x13 */
 
-	sprintf(temp, "%.2s%02d%.3s  ", day_of_week[wkday], dom, mon_of_year[month]);
+	snprintf(date, date_size,
+			"%.2s%02d%.3s  ", day_of_week[wkday], dom, mon_of_year[month]);
 
 	k = 5;
 	for (i=0; i<2; i++) {
@@ -544,6 +559,9 @@ void DrawWijzer(int hr, int min, int sec) {
 		}
 	}
 	/**********************************************************************/
+	if (noseconds)
+		return;    /* Skip drawing the seconds. */
+
 	psi = sec * (M_PI / 30.0);
 
 	dx = floor(sin(psi) * 22 * 0.9 + 0.5);
@@ -615,15 +633,16 @@ void DrawWijzer(int hr, int min, int sec) {
 |* usage																	   *|
 \*******************************************************************************/
 
-void usage(void) {
-
-	fprintf(stderr, "\nwmtime - programming: tijno, (de)bugging & design: warp, web hosting: bobby\n\n");
-	fprintf(stderr, "usage:\n");
-	fprintf(stderr, "\t-digital\tdigital clock\n");
-	fprintf(stderr, "\t-display <display name>\n");
-	fprintf(stderr, "\t-h\tthis screen\n");
-	fprintf(stderr, "\t-v\tprint the version number\n");
-	fprintf(stderr, "\n");
+void usage(char *name) {
+	printf("Usage: %s [OPTION]...\n", name);
+	printf("WindowMaker dockapp that displays the time and date.\n");
+	printf("\n");
+	printf("  -d, -digital         display the digital clock\n");
+	printf("  -display DISPLAY     contact the DISPLAY X server\n");
+	printf("  -geometry GEOMETRY   position the clock at GEOMETRY\n");
+	printf("  -n, -noseconds       disables the second hand\n");
+	printf("  -h                   display this help and exit\n");
+	printf("  -v                   output version information and exit\n");
 }
 
 /*******************************************************************************\
@@ -631,8 +650,8 @@ void usage(void) {
 \*******************************************************************************/
 
 void printversion(void) {
-
-	if (!strcmp(ProgName, "wmtime")) {
-		fprintf(stderr, "%s\n", WMMON_VERSION);
-	}
+	printf("WMTime version %s\n", WMMON_VERSION);
 }
+
+/* vim: sw=4 ts=4 columns=82
+ */

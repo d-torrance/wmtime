@@ -1,0 +1,6 @@
+?package(wmtime):\
+	needs="X11"\
+	section="Apps/Tools"\
+	title="WMTime"\
+	command="/usr/bin/wmtime"\
+	hints="Clocks,Dockapp"

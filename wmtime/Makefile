@@ -4,12 +4,16 @@ OBJS =	wmtime.o \
 		../wmgeneral/wmgeneral.o \
 		../wmgeneral/misc.o \
 		../wmgeneral/list.o
+XPMS = wmtime-master.xpm wmtime-mask.xbm
+
+CC = gcc
+CFLAGS = -O2
 
 .c.o:
-	cc -c -O2 -Wall $< -o $*.o
+	$(CC) $(CFLAGS) -c -Wall $< -o $*.o
 
-wmtime: $(OBJS)
-	cc -o wmtime $^ $(LIBDIR) $(LIBS)
+wmtime: $(OBJS) $(XPMS)
+	$(CC) $(CFLAGS) -o wmtime $(OBJS) $(LIBDIR) $(LIBS)
 
 clean::
 	for i in $(OBJS) ; do \

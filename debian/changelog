@@ -1,3 +1,35 @@
+wmtime (1.0b2-9) unstable; urgency=medium
+
+  * Fixed build dependencies so we no longer depend on libxpm4-dev.
+  * Quoted all strings in /usr/lib/menu/wmtime.
+
+ -- Simon Law <sfllaw@debian.org>  Tue, 10 Aug 2004 21:15:53 -0400
+
+wmtime (1.0b2-8) unstable; urgency=low
+
+  * Fixed more problems in wmtime.1
+  * Add a Debian menu entry for WMTime.
+
+ -- Simon Law <sfllaw@debian.org>  Wed, 26 Nov 2003 23:16:11 -0500
+
+wmtime (1.0b2-7) unstable; urgency=low
+
+  * Corrected some usage information.
+  * Fixed some problems in wmtime.1
+
+ -- Simon Law <sfllaw@debian.org>  Thu, 13 Nov 2003 01:29:24 -0500
+
+wmtime (1.0b2-6) unstable; urgency=low
+
+  * New maintainer.
+  * Added a manual page for wmtime.  It was inspired by Adriaan Peeters'
+    work.  (Closes: Bug#181684)
+  * Added the -geometry option.  (Closes: Bug#182278, Bug#212426)
+  * Added the -noseconds option.  (Closes: Bug#25438)
+  * Fixed some buffer overflow problems.
+
+ -- Simon Law <sfllaw@debian.org>  Thu, 09 Oct 2003 17:52:34 -0400
+
 wmtime (1.0b2-5) unstable; urgency=low
 
   * Forgot to update menu entry with new path (closes: #142461)

@@ -1,24 +1,21 @@
 Source: wmtime
 Section: x11
 Priority: optional
-Maintainer: Fredrik Hallenberg <hallon@debian.org>
-Standards-Version: 3.5.6
-Build-Depends: debhelper, libxpm4-dev
+Maintainer: Simon Law <sfllaw@debian.org>
+Standards-Version: 3.6.1
+Build-Depends: debhelper (>> 4.0.0), libx11-dev, libxpm-dev, libxext-dev
 
 Package: wmtime
 Architecture: any
-Depends: ${shlibs:Depends}
-Description: Displays time and date
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Window Maker dockapp that displays the time and date
  WMTime displays the time and date and gives you some nice additional 
- features too. It is intended for docking in WindowMaker.
+ features too.  It is intended for docking in Window Maker.
  .
- WMTime currently provides:
+ It currently provides:
  .
-   * Time and date;
-   * Realtime morphing UI (analog <> digital mode);
-   * Autoscaling and anti aliased hands;
-   * Locale, can display DAY and DATE in various languages;
-   * Can launch 3 user definable commands through ~/.wmtimerc;
-   * Can be run multiple times;
-   * Commandline options for help (-h), version (-v), digital
-     clock mode (-digital) and and display (-d)
+   * the time and date;
+   * a realtime morphing interface (analog <> digital mode);
+   * auto-scaled and anti-aliased hands;
+   * localization: displaying the day and date in various languages;
+   * three user-defined commands to launch.
