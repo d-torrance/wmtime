@@ -89,7 +89,7 @@
 char	*ProgName;
 int		digital = 0;
 char	day_of_week[7][3] = { "SU", "MO", "TU", "WE", "TH", "FR", "SA" };
-char	mon_of_year[12][4] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOW", "DEC" };
+char	mon_of_year[12][4] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
 
 /* functions */
 void usage(void);
@@ -215,7 +215,10 @@ void wmtime_routine(int argc, char **argv) {
 	openXwindow(argc, argv, wmtime_master_xpm, wmtime_mask_bits, 128, 64);
 
 	copyXPMArea(0, 0, 128, 64, 0, 98);
-	if (digital) {
+
+        copyXPMArea(0, 0, 64, 64, 64, 0);
+	setMaskXY(0, 0);
+        if (digital) {
 		copyXPMArea(64, 0, 64, 64, 0, 0);
 		setMaskXY(-64, 0);
 	} else {
@@ -223,7 +226,7 @@ void wmtime_routine(int argc, char **argv) {
 		setMaskXY(0, 0);
 	}
 
-	/* add mouse region */
+        /* add mouse region */
 	AddMouseRegion(0, 5, 48, 58, 60);
 	AddMouseRegion(1, 5, 5, 58, 46);
 
@@ -286,8 +289,8 @@ void wmtime_routine(int argc, char **argv) {
 							DrawTime(time_struct->tm_hour, time_struct->tm_min, time_struct->tm_sec);
 							DrawDate(time_struct->tm_wday, time_struct->tm_mday, time_struct->tm_mon);
 						} else {
-							copyXPMArea(0, 98, 64, 64, 0, 0);
-							setMaskXY(0, 0);
+							copyXPMArea(0, 98, 64, 64, 0, 0);	
+						        setMaskXY(0, 0);
 							DrawWijzer(time_struct->tm_hour, time_struct->tm_min, time_struct->tm_sec);
 							DrawDate(time_struct->tm_wday, time_struct->tm_mday, time_struct->tm_mon);
 						}

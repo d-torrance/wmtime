@@ -1,3 +1,17 @@
+wmtime (1.0b2-3) frozen unstable; urgency=low
+
+  * Fixed monthname (NOV instead of NOW).
+  * Added menu entry. (closes: #51996)
+  * Bumped standards revision to 3.1.1.
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Sun,  6 Feb 2000 21:01:55 +0100
+
+wmtime (1.0b2-2) unstable; urgency=low
+
+  * WMTime didn't work properly with -digital flag. (closes: #31869)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Mon,  5 Jul 1999 09:32:59 +0200
+
 wmtime (1.0b2-1) unstable; urgency=low
 
   * Initial Release.

@@ -1,0 +1,5 @@
+?package(wmtime):\
+  needs=X11\
+  section=Apps/Tools hints="Clocks"\
+  title="wmtime"\
+  command="/usr/X11R6/bin/wmtime"
