@@ -1,3 +1,12 @@
+wmtime (1.0b2-10) unstable; urgency=low
+
+  * New maintainer.  (Closes: #487135)
+  * Checked the debian files against the latest standard.  (Closes: Bug#379574)
+  * Moved menu item to Applications/System/Monitoring.
+  * Minor code corrections to avoid build warnings.
+
+ -- Paul Harris <harris.pc@gmail.com>  Tue, 15 Jul 2008 15:24:09 +0800
+
 wmtime (1.0b2-9) unstable; urgency=medium
 
   * Fixed build dependencies so we no longer depend on libxpm4-dev.

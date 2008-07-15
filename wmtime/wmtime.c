@@ -26,6 +26,8 @@
 	----
 	Changes:
 	----
+   15/07/2008 (Paul Harris, harris.pc@gmail.com)
+      * Minor changes to correct build warnings
 	09/10/2003 (Simon Law, sfllaw@debian.org)
 		* Add -geometry support
 		* Add -noseconds support
@@ -82,9 +84,9 @@
  /* Defines */
 /***********/
 
-#define LEFT_ACTION (NULL)
-#define MIDDLE_ACTION (NULL)
-#define RIGHT_ACTION (NULL)
+const char* default_left_action = NULL;
+const char* default_middle_action = NULL;
+const char* default_right_action = NULL;
 
 #define WMMON_VERSION "1.0b2"
 
@@ -211,9 +213,9 @@ void wmtime_routine(int argc, char **argv) {
 	char		*conffile = NULL;
 
 	/* Scan through ~/.wmtimerc for the mouse button actions. */
-	if (LEFT_ACTION) left_action = strdup(LEFT_ACTION);
-	if (MIDDLE_ACTION) middle_action = strdup(MIDDLE_ACTION);
-	if (RIGHT_ACTION) right_action = strdup(RIGHT_ACTION);
+	if (default_left_action) left_action = strdup(default_left_action);
+	if (default_middle_action) middle_action = strdup(default_middle_action);
+	if (default_right_action) right_action = strdup(default_right_action);
 
 	/* Scan through the .rc files */
 	if (asprintf(&conffile, "/etc/wmtimerc") >= 0) {

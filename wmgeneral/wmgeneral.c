@@ -46,6 +46,11 @@ int			screen;
 int			x_fd;
 int			d_depth;
 XSizeHints	mysizehints;
+/* Deal with strange X11 function prototyping...
+ * If I don't do this, I will get warnings about the sign
+ * of the width/height variables - which are thrown away anyway. */
+int dummy_int_width, dummy_int_height;
+unsigned int uint_width, uint_height;
 XWMHints	mywmhints;
 Pixel		back_pix, fore_pix;
 char		*Geometry = "";
@@ -315,19 +320,20 @@ void openXwindow(int argc, char *argv[], char *pixmap_bytes[], char *pixmask_bit
 
 	XWMGeometry(display, screen, Geometry, NULL, borderwidth, &mysizehints,
 	            &mysizehints.x, &mysizehints.y,
-	            &mysizehints.width, &mysizehints.height, &dummy);
+	            &dummy_int_width, &dummy_int_height, &dummy);
 	if (geometry)
 		XParseGeometry(geometry, &mysizehints.x, &mysizehints.y,
-		               &mysizehints.width, &mysizehints.height);
+		               &uint_width, &uint_height);
 
-	mysizehints.width = 64;
-	mysizehints.height = 64;
+   /* Override width/height anyway */
+	uint_width = 64;
+	uint_height = 64;
 		
 	win = XCreateSimpleWindow(display, Root, mysizehints.x, mysizehints.y,
-				mysizehints.width, mysizehints.height, borderwidth, fore_pix, back_pix);
+				uint_width, uint_height, borderwidth, fore_pix, back_pix);
 	
 	iconwin = XCreateSimpleWindow(display, win, mysizehints.x, mysizehints.y,
-				mysizehints.width, mysizehints.height, borderwidth, fore_pix, back_pix);
+				uint_width, uint_height, borderwidth, fore_pix, back_pix);
 
 	/* Activate hints */
 	XSetWMNormalHints(display, win, &mysizehints);

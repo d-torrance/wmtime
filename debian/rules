@@ -35,7 +35,6 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 
-	# Add here commands to compile the package.
 	cd wmtime; $(MAKE)
 
 	touch build-stamp
@@ -45,7 +44,6 @@ clean:
 	dh_testroot
 	rm -f build-stamp 
 
-	# Add here commands to clean up after the build process.
 	-cd wmtime; $(MAKE) clean
 
 	dh_clean
@@ -56,7 +54,6 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	# Add here commands to install the package into debian/wmtime.
 	install -m 755 wmtime/wmtime $(CURDIR)/debian/wmtime/usr/bin
 
 # Build architecture-independent files here.
