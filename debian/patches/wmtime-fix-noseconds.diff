@@ -1,0 +1,51 @@
+Description:  wmtime draws garbage when -noseconds is given
+
+wmtime draws a small amount of garbage to the screen when -noseconds is
+given, because DrawTime reads beyond the given string buffer. This
+doesn't trigger all the time for me (I assume due to the nondeterminism
+of reading uninitialized memory or something), but it pretty clearly
+happens if I switch VTs.
+
+The attached patch limits the amount of the formatted string we try to
+read, so we don't read beyond the end of the string. Fixes it for me.
+
+-- 
+Andrew Deason
+adeason@dson.org
+Author:  Andrew Deason <adeason@dson.org>
+Bug-Debian:  http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=639626
+Applied-Upstream:  http://repo.or.cz/w/dockapps.git/commit/2295cacec4c6ffbe7d31868d0d016abfb6899011
+
+---
+ wmtime/wmtime.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+diff --git a/wmtime/wmtime.c b/wmtime/wmtime.c
+index 2dfed0c..6f1a007 100644
+--- a/wmtime/wmtime.c
++++ b/wmtime/wmtime.c
+@@ -344,17 +344,20 @@ void DrawTime(int hr, int min, int sec) {
+ 	char	time[time_size];
+ 	char	*p = time;
+ 	int		i,j,k=6;
++	int numfields;
+ 
+ 	/* 7x13 */
+ 
+ 	if (noseconds) {
+ 		snprintf(time, time_size, "%02d:%02d ", hr, min);
++		numfields = 2;
+ 	}
+ 	else {
+ 		snprintf(time, time_size, "%02d:%02d:%02d ", hr, min, sec);
++		numfields = 3;
+ 	}
+ 
+-	for (i=0; i < 3; i++) {
++	for (i=0; i < numfields; i++) {
+ 		for (j=0; j<2; j++) {
+ 			copyXPMArea((*p-'0')*7 + 1, 84, 8, 13, k, 18);
+ 			k += 7;
+-- 
+1.7.5.4
+

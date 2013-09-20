@@ -1,0 +1,16 @@
+Description: Added install option to Makefile
+  
+Previously, "make install" was not available when installing wmtime, so this was added so that "dh_auto_build" could work.
+
+Author:  Doug Torrance <profzoom@hotmail.com>	
+
+--- wmtime-1.0b2.orig/wmtime/Makefile
++++ wmtime-1.0b2/wmtime/Makefile
+@@ -20,3 +20,7 @@ clean::
+ 		rm $$i; \
+ 	done
+ 	rm wmtime
++
++install:: wmtime
++	install -m 755 wmtime $(DESTDIR)/usr/bin
++

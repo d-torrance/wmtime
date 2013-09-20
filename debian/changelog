@@ -1,7 +1,29 @@
+wmtime (1.0b2-11) unstable; urgency=low
+
+  * New maintainer (Closes: #691813).
+  * debian/compat
+    + Bump to 9.
+  * debian/control
+    + Changed homepage and maintainer.
+    + Bump Standards-Version to 3.9.4, no changes required.
+  * debian/watch
+    + Added.
+  * debian/patches
+    + Switched to dpkg-source 3.0 (quilt) format.
+    + Fixed -noseconds garbage, patch by Andrew Deason (Closes: #639626).
+    + Fixed date localization, patch by Milan Cermak (Closes: #661843).
+    + Fix Makefile to enable hardening, patch by John Paul Adrian Glaubitz.
+  * debian/rules
+    + Simplified to debhelper 7 style.
+  * debian/copyright
+    + Updated to new format.
+
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Thu, 19 Sep 2013 21:09:40 -0500
+
 wmtime (1.0b2-10) unstable; urgency=low
 
   * New maintainer.  (Closes: #487135)
-  * Checked the debian files against the latest standard.  (Closes: Bug#379574)
+  * Checked the debian files against the latest standard.  (Closes: #379574)
   * Moved menu item to Applications/System/Monitoring.
   * Minor code corrections to avoid build warnings.
 
@@ -32,9 +54,9 @@ wmtime (1.0b2-6) unstable; urgency=low
 
   * New maintainer.
   * Added a manual page for wmtime.  It was inspired by Adriaan Peeters'
-    work.  (Closes: Bug#181684)
-  * Added the -geometry option.  (Closes: Bug#182278, Bug#212426)
-  * Added the -noseconds option.  (Closes: Bug#25438)
+    work.  (Closes: #181684)
+  * Added the -geometry option.  (Closes: #182278, #212426)
+  * Added the -noseconds option.  (Closes: #25438)
   * Fixed some buffer overflow problems.
 
  -- Simon Law <sfllaw@debian.org>  Thu, 09 Oct 2003 17:52:34 -0400

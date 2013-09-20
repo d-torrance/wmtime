@@ -1,9 +1,12 @@
 Source: wmtime
 Section: x11
 Priority: optional
-Maintainer: Paul Harris <harris.pc@gmail.com>
-Build-Depends: debhelper (>= 7), libx11-dev, libxpm-dev, libxext-dev
-Standards-Version: 3.8.0
+Maintainer: Doug Torrance <dtorrance@monmouthcollege.edu>
+Build-Depends: debhelper (>= 9), libx11-dev, libxpm-dev, libxext-dev
+Standards-Version: 3.9.4
+Homepage: http://wmaker.friedcheese.org
+Vcs-Browser: http://repo.or.cz/r/dockapps.git
+Vcs-Git: git://repo.or.cz/dockapps.git
 
 Package: wmtime
 Architecture: any

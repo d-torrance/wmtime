@@ -12,8 +12,6 @@
 	---
 	CHANGES:
 	---
-	10/10/2003 (Simon Law, sfllaw@debian.org)
-		* changed the parse_rcfile function to use getline instead of fgets.
 	02/05/1998 (Martijn Pieterse, pieterse@xs4all.nl)
 		* changed the read_rc_file to parse_rcfile, as suggester by Marcelo E. Magallon
 		* debugged the parse_rc file.
@@ -23,7 +21,6 @@
 
 */
 
-#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,11 +43,6 @@ int			screen;
 int			x_fd;
 int			d_depth;
 XSizeHints	mysizehints;
-/* Deal with strange X11 function prototyping...
- * If I don't do this, I will get warnings about the sign
- * of the width/height variables - which are thrown away anyway. */
-int dummy_int_width, dummy_int_height;
-unsigned int uint_width, uint_height;
 XWMHints	mywmhints;
 Pixel		back_pix, fore_pix;
 char		*Geometry = "";
@@ -91,18 +83,17 @@ int CheckMouseRegion(int, int);
 void parse_rcfile(const char *filename, rckeys *keys) {
 
 	char	*p;
-	char	*line = NULL;
-	size_t  line_size = 0;
+	char	temp[128];
 	char	*tokens = " :\t\n";
 	FILE	*fp;
 	int		i,key;
 
 	fp = fopen(filename, "r");
 	if (fp) {
-		while (getline(&line, &line_size, fp) >= 0) {
+		while (fgets(temp, 128, fp)) {
 			key = 0;
 			while (key >= 0 && keys[key].label) {
-				if ((p = strstr(line, keys[key].label))) {
+				if ((p = strstr(temp, keys[key].label))) {
 					p += strlen(keys[key].label);
 					p += strspn(p, tokens);
 					if ((i = strcspn(p, "#\n"))) p[i] = 0;
@@ -279,7 +270,6 @@ void openXwindow(int argc, char *argv[], char *pixmap_bytes[], char *pixmask_bit
 	unsigned int	borderwidth = 1;
 	XClassHint		classHint;
 	char			*display_name = NULL;
-	char			*geometry = NULL;
 	char			*wname = argv[0];
 	XTextProperty	name;
 
@@ -292,9 +282,7 @@ void openXwindow(int argc, char *argv[], char *pixmap_bytes[], char *pixmask_bit
 
 	for (i=1; argv[i]; i++) {
 		if (!strcmp(argv[i], "-display")) 
-			display_name = argv[++i];
-		else if (!strcmp(argv[i], "-geometry"))
-			geometry = argv[++i];
+			display_name = argv[i+1];
 	}
 
 	if (!(display = XOpenDisplay(display_name))) {
@@ -319,21 +307,16 @@ void openXwindow(int argc, char *argv[], char *pixmap_bytes[], char *pixmask_bit
 	fore_pix = GetColor("black");
 
 	XWMGeometry(display, screen, Geometry, NULL, borderwidth, &mysizehints,
-	            &mysizehints.x, &mysizehints.y,
-	            &dummy_int_width, &dummy_int_height, &dummy);
-	if (geometry)
-		XParseGeometry(geometry, &mysizehints.x, &mysizehints.y,
-		               &uint_width, &uint_height);
+				&mysizehints.x, &mysizehints.y,&mysizehints.width,&mysizehints.height, &dummy);
 
-   /* Override width/height anyway */
-	uint_width = 64;
-	uint_height = 64;
+	mysizehints.width = 64;
+	mysizehints.height = 64;
 		
 	win = XCreateSimpleWindow(display, Root, mysizehints.x, mysizehints.y,
-				uint_width, uint_height, borderwidth, fore_pix, back_pix);
+				mysizehints.width, mysizehints.height, borderwidth, fore_pix, back_pix);
 	
 	iconwin = XCreateSimpleWindow(display, win, mysizehints.x, mysizehints.y,
-				uint_width, uint_height, borderwidth, fore_pix, back_pix);
+				mysizehints.width, mysizehints.height, borderwidth, fore_pix, back_pix);
 
 	/* Activate hints */
 	XSetWMNormalHints(display, win, &mysizehints);
@@ -381,6 +364,3 @@ void openXwindow(int argc, char *argv[], char *pixmap_bytes[], char *pixmask_bit
 	XMapWindow(display, win);
 
 }
-
-/* vim: ts=4 columns=82
- */
