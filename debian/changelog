@@ -3,10 +3,12 @@ wmtime (1.1-2) unstable; urgency=low
   * debian/control
     + Bump Standards-Version to 3.9.5, no changes required.
     + Update Vcs-* fields.
+  * debian/patches/rm-force-in-make-clean.patch
+    + Use rm -f for make clean.
   * debian/rules
     + Simplify by using --sourcedirectory=wmtime.
 
- -- Doug Torrance <dtorrance@monmouthcollege.edu>  Sun, 20 Jul 2014 23:48:26 -0500
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Mon, 21 Jul 2014 01:08:09 -0500
 
 wmtime (1.1-1) unstable; urgency=low
 
