@@ -6,7 +6,7 @@ wmtime (1.1-2) unstable; urgency=low
   * debian/rules
     + Simplify by using --sourcedirectory=wmtime.
 
- --
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Sun, 20 Jul 2014 23:48:26 -0500
 
 wmtime (1.1-1) unstable; urgency=low
 
