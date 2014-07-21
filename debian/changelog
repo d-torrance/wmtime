@@ -1,3 +1,13 @@
+wmtime (1.1-2) unstable; urgency=low
+
+  * debian/control
+    + Bump Standards-Version to 3.9.5, no changes required.
+    + Update Vcs-* fields.
+  * debian/rules
+    + Simplify by using --sourcedirectory=wmtime.
+
+ --
+
 wmtime (1.1-1) unstable; urgency=low
 
   * New upstream version
