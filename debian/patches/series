@@ -1,1 +1,2 @@
 rm-force-in-make-clean.patch
+remove_unused_variables.patch
