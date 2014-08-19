@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: wmtime
-Upstream-Contact: Doug Torrance <dtorrance@monmouthcollege.edu>
-Source: http://wmtime.sourceforge.net/
+Upstream-Contact: Window Maker Developers Team <wmaker-dev@lists.windowmaker.org>
+Source: http://windowmaker.org/dockapps/?name=wmtime
 
 Files: *
 Copyright: 1997, 1998 Martijn Pieterse and Antoine Nulle
