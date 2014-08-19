@@ -12,7 +12,7 @@ Package: wmtime
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Window Maker dockapp that displays the time and date
- WMTime displays the time and date and gives you some nice additional 
+ WMTime displays the time and date and gives you some nice additional
  features too.  It is intended for docking in Window Maker.
  .
  It currently provides:
