@@ -3,10 +3,10 @@ wmtime (1.1-3) UNRELEASED; urgency=medium
   * debian/control
     - Update Homepage.
     - Remove trailing whitespace in Description.
-  * debian/copyright:
+  * debian/copyright
     - Update Upstream-Contact and Source.
-  * debian/patches/remove_unused_variables
-    - Avoid compiler warning.
+  * debian/patches/remove_unused_variables.patch
+    - New file; avoid compiler warning.
   * debian/watch
     - Update with new location.
 
