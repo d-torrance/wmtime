@@ -2,3 +2,8 @@
 
 %:
 	dh $@ --sourcedirectory=wmtime
+
+get-orig-source:
+	uscan --verbose --force-download
+	rename -v "s/wmtime-(.+)\.download/wmtime_\1\.orig\.tar\.gz/" \
+		../wmtime-*.download
