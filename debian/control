@@ -3,7 +3,7 @@ Section: x11
 Priority: optional
 Maintainer: Doug Torrance <dtorrance@monmouthcollege.edu>
 Build-Depends: debhelper (>= 9), libx11-dev, libxpm-dev, libxext-dev
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Homepage: http://windowmaker.org/dockapps/?name=wmtime
 Vcs-Browser: https://github.com/d-torrance/wmtime
 Vcs-Git: https://github.com/d-torrance/wmtime.git
