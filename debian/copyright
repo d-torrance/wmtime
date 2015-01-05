@@ -7,7 +7,7 @@ Files: *
 Copyright: 1997, 1998 Martijn Pieterse and Antoine Nulle
 License: GPL-2
 
-Files: wmtime/wmtime.1
+Files: wmtime.1
 Copyright: 2003 Software in the Public Interest, Inc.
 License: GPL-2+
 
