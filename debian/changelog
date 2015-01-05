@@ -1,29 +1,44 @@
+wmtime (1.1-1) unstable; urgency=low
+
+  * New upstream version
+    + Includes all previous Debian patches.
+    + Default to English when non-Latin characters are encountered.
+      (Closes: #726125)
+    + Print numbers in weekday/month names when needed.
+  * debian/control
+    + Fix Vcs-Browser field.
+    + Update Homepage.
+  * debian/watch
+    + Switch to new URL.
+
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Sun, 13 Oct 2013 13:35:36 -0500
+
 wmtime (1.0b2-11) unstable; urgency=low
 
   * New maintainer (Closes: #691813).
   * debian/compat
     + Bump to 9.
   * debian/control
-    + Changed homepage and maintainer.
+    + Change homepage and maintainer.
     + Bump Standards-Version to 3.9.4, no changes required.
   * debian/watch
-    + Added.
+    + Add a watch file.
   * debian/patches
-    + Switched to dpkg-source 3.0 (quilt) format.
-    + Fixed -noseconds garbage, patch by Andrew Deason (Closes: #639626).
-    + Fixed date localization, patch by Milan Cermak (Closes: #661843).
+    + Switch to dpkg-source 3.0 (quilt) format.
+    + Fix -noseconds garbage, patch by Andrew Deason. (Closes: #639626)
+    + Fix date localization, patch by Milan Cermak. (Closes: #661843)
     + Fix Makefile to enable hardening, patch by John Paul Adrian Glaubitz.
   * debian/rules
-    + Simplified to debhelper 7 style.
+    + Simplify to debhelper 7 style.
   * debian/copyright
-    + Updated to new format.
+    + Update to new format.
 
  -- Doug Torrance <dtorrance@monmouthcollege.edu>  Thu, 19 Sep 2013 21:09:40 -0500
 
 wmtime (1.0b2-10) unstable; urgency=low
 
-  * New maintainer.  (Closes: #487135)
-  * Checked the debian files against the latest standard.  (Closes: #379574)
+  * New maintainer. (Closes: #487135)
+  * Remove old rules file. (Closes: #379574)
   * Moved menu item to Applications/System/Monitoring.
   * Minor code corrections to avoid build warnings.
 
@@ -31,65 +46,66 @@ wmtime (1.0b2-10) unstable; urgency=low
 
 wmtime (1.0b2-9) unstable; urgency=medium
 
-  * Fixed build dependencies so we no longer depend on libxpm4-dev.
-  * Quoted all strings in /usr/lib/menu/wmtime.
+  * Fix build dependencies so we no longer depend on libxpm4-dev.
+  * Quote all strings in /usr/lib/menu/wmtime.
 
  -- Simon Law <sfllaw@debian.org>  Tue, 10 Aug 2004 21:15:53 -0400
 
 wmtime (1.0b2-8) unstable; urgency=low
 
-  * Fixed more problems in wmtime.1
-  * Add a Debian menu entry for WMTime.
+  * Fix even more problems in wmtime.1.
+  * Add a Debian menu entry for wmtime.
 
  -- Simon Law <sfllaw@debian.org>  Wed, 26 Nov 2003 23:16:11 -0500
 
 wmtime (1.0b2-7) unstable; urgency=low
 
-  * Corrected some usage information.
-  * Fixed some problems in wmtime.1
+  * Correct usage information.
+  * Fix some problems in wmtime.1.
 
  -- Simon Law <sfllaw@debian.org>  Thu, 13 Nov 2003 01:29:24 -0500
 
 wmtime (1.0b2-6) unstable; urgency=low
 
   * New maintainer.
-  * Added a manual page for wmtime.  It was inspired by Adriaan Peeters'
-    work.  (Closes: #181684)
-  * Added the -geometry option.  (Closes: #182278, #212426)
-  * Added the -noseconds option.  (Closes: #25438)
-  * Fixed some buffer overflow problems.
+  * Added a man page for wmtime. It was inspired by Adriaan Peeters'
+    work. (Closes: #181684)
+  * Add the -geometry option. (Closes: #182278, #212426)
+  * Add the -noseconds option. (Closes: #25438)
+  * Fix some buffer overflow problems.
 
  -- Simon Law <sfllaw@debian.org>  Thu, 09 Oct 2003 17:52:34 -0400
 
 wmtime (1.0b2-5) unstable; urgency=low
 
-  * Forgot to update menu entry with new path (closes: #142461)
+  * Update menu entry to the new binary path. (Closes: #142461)
 
  -- Fredrik Hallenberg <hallon@debian.org>  Fri, 12 Apr 2002 17:58:04 +0200
 
 wmtime (1.0b2-4) unstable; urgency=low
 
-  * Install in /usr/bin instead of /usr/X11R6/bin (closes: #122023)
-  * Recompile fixes dependencies (closes: #132386)
+  * Install into /usr/bin instead of /usr/X11R6/bin. (Closes: #122023)
+  * Recompile to fix dependencies. (Closes: #132386)
 
  -- Fredrik Hallenberg <hallon@debian.org>  Thu, 11 Apr 2002 18:20:07 +0200
 
 wmtime (1.0b2-3) frozen unstable; urgency=low
 
-  * Fixed monthname (NOV instead of NOW).
-  * Added menu entry. (closes: #51996)
-  * Bumped standards revision to 3.1.1.
+  * Fix month name (NOV instead of NOW).
+  * Add menu entry. (Closes: #51996)
+  * Bump Standards Version to 3.1.1.
 
  -- Fredrik Hallenberg <hallon@debian.org>  Sun,  6 Feb 2000 21:01:55 +0100
 
 wmtime (1.0b2-2) unstable; urgency=low
 
-  * WMTime didn't work properly with -digital flag. (closes: #31869)
+  * Fix a bug where wmtime didn't work properly with the -digital
+    flag set. (Closes: #31869)
 
  -- Fredrik Hallenberg <hallon@debian.org>  Mon,  5 Jul 1999 09:32:59 +0200
 
 wmtime (1.0b2-1) unstable; urgency=low
 
-  * Initial Release.
+  * Initial release.
 
  -- Fredrik Hallenberg <hallon@debian.org>  Wed, 15 Jul 1998 18:18:07 +0200

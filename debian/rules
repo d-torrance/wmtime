@@ -5,12 +5,12 @@
 
 override_dh_auto_build:
 	dh_auto_build
-	dh_auto_build --sourcedirectory=wmtime
+	cd wmtime && make
 
 override_dh_clean:
-	dh_auto_clean
-	make -C wmtime clean || true
+	dh_clean
+	cd wmtime && make clean || true
 
 override_dh_install:
-	dh_auto_install
-	make -C wmtime DESTDIR=$(CURDIR)/debian/wmtime install
+	dh_install
+	cd wmtime && make DESTDIR=$(CURDIR)/debian/wmtime install
