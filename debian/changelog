@@ -1,5 +1,6 @@
 wmtime (1.2-1) unstable; urgency=medium
 
+  * New upstream release.
   * debian/control
     - Bump Standards-Version to 3.9.6; no changes required.
   * debian/copyright
