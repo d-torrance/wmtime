@@ -1,17 +1,19 @@
-wmtime (1.2-1) UNRELEASED; urgency=medium
+wmtime (1.2-1) unstable; urgency=medium
 
   * debian/control
     - Bump Standards-Version to 3.9.6; no changes required.
-  * debian/dirs
-    - Remove unnecessary file.
-  * debian/manpages
-    - Remove unnecessary file.
+  * debian/copyright
+    - Update location of wmtime.1.
+  * debian/(dirs|manpages)
+    - Remove unnecessary files.
   * debian/rules
     - Update get-orig-source target; add --no-symlink for newer versions
       of uscan and check if tarball was downloaded before renaming.
     - Remove --sourcedirectory=wmtime; no longer needed.
+    - Add override_dh_auto_install target to set PREFIX to /usr.
+    - Add override_dh_auto_build target to use CFLAGS from dpkg-buildflags.
 
- -- Doug Torrance <dtorrance@monmouthcollege.edu>  Sun, 04 Jan 2015 01:37:19 -0600
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Tue, 06 Jan 2015 18:21:51 -0600
 
 wmtime (1.1+20140827-1) unstable; urgency=medium
 
