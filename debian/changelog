@@ -1,3 +1,11 @@
+wmtime (1.3-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+    - Includes new version of wmgeneral library that builds with gcc5
+      (Closes: #778174).
+
+-- Doug Torrance <dtorrance@monmouthcollege.edu>  Tue, 26 May 2015 08:42:49 -0500
+
 wmtime (1.2-1) unstable; urgency=medium
 
   * New upstream release.
