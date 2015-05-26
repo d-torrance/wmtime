@@ -1,4 +1,20 @@
-/*
+/*  wmtime - Window Maker dockapp that displays the time and date
+    Copyright (C) 1997, 1998 Martijn Pieterse <pieterse@xs4all.nl>
+    Copyright (C) 1997, 1998 Antoine Nulle <warp@xs4all.nl>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 	Code based on wmppp/wmifs
 
 	[Orig WMMON comments]
@@ -58,31 +74,26 @@
 */
 
 #define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <math.h>
-#include <locale.h>
-#include <langinfo.h>
-#include <iconv.h>
-#include <ctype.h>
-
-#include <sys/wait.h>
-#include <sys/param.h>
-#include <sys/types.h>
-
-#include <X11/Xlib.h>
+#include <X11/X.h>                     /* for ButtonPress, ButtonRelease, etc */
+#include <X11/Xlib.h>                  /* for XEvent, XButtonEvent, etc */
 #include <X11/xpm.h>
-#include <X11/extensions/shape.h>
+#include <ctype.h>                     /* for toupper */
+#include <iconv.h>                     /* for iconv, iconv_close, etc */
+#include <langinfo.h>                  /* for nl_langinfo, ABDAY_1, etc */
+#include <locale.h>                    /* for NULL, setlocale, LC_ALL */
+#include <math.h>                      /* for floor, cos, sin, M_PI */
+#include <stddef.h>                    /* for size_t */
+#include <stdio.h>                     /* for printf, asprintf, snprintf, etc */
+#include <stdlib.h>                    /* for abs, free, exit, getenv */
+#include <string.h>                    /* for strcmp, strdup, strncpy, etc */
+#include <sys/wait.h>                  /* for waitpid, WNOHANG */
+#include <time.h>                      /* for tm, time, localtime */
+#include <unistd.h>                    /* for usleep */
+#include "wmgeneral/misc.h"            /* for execCommand */
+#include "wmgeneral/wmgeneral.h"       /* for copyXPMArea, RedrawWindow, etc */
+#include "wmtime-mask.xbm"             /* for wmtime_mask_bits */
+#include "wmtime-master.xpm"           /* for wmtime_master_xpm */
 
-#include "wmgeneral/wmgeneral.h"
-#include "wmgeneral/misc.h"
-
-#include "wmtime-master.xpm"
-#include "wmtime-mask.xbm"
 
   /***********/
  /* Defines */
@@ -92,7 +103,7 @@ const char* default_left_action = NULL;
 const char* default_middle_action = NULL;
 const char* default_right_action = NULL;
 
-#define WMTIME_VERSION "1.2"
+#define WMTIME_VERSION "1.3"
 
   /********************/
  /* Global Variables */
@@ -102,6 +113,8 @@ int		digital = 0;
 int		noseconds = 0;
 char	day_of_week[7][3] = { "SU", "MO", "TU", "WE", "TH", "FR", "SA" };
 char	mon_of_year[12][4] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
+XpmIcon wmgen;
+char color[256];
 
 /* functions */
 void usage(char *);
@@ -110,6 +123,7 @@ void printversion(void);
 void wmtime_routine(int, char **);
 void get_lang();
 
+
 int main(int argc, char *argv[]) {
 
 	int		i;
@@ -117,12 +131,19 @@ int main(int argc, char *argv[]) {
 	char locale[256];
 
 	locale[0] = 0;
+	color[0] = 0;
 
 	for (i=1; i<argc; i++) {
 		char *arg = argv[i];
 
 		if (*arg=='-') {
 			switch (arg[1]) {
+			case 'c' :
+				if (argc > i+1) {
+					strcpy(color, argv[i+1]);
+					i++;
+				}
+				break;
 			case 'd' :
 				if (strcmp(arg+1, "display")
 				    && strcmp(arg+1, "digital") && strcmp(arg+1, "d")) {
@@ -184,8 +205,10 @@ void get_lang(void)
 	size_t insize, outsize;
 
 	icd = iconv_open("ASCII//TRANSLIT", nl_langinfo(CODESET));
-	if (icd < 0)
+	if (icd == (iconv_t) -1) {
+		perror("wmtime: Error allocating charset conversion descriptor");
 		return;
+	}
 
 	for (i = 0; i < 7; i++) {
 		strncpy(langbuf, nl_langinfo(ABDAY_1 + i), 10);
@@ -215,6 +238,21 @@ void get_lang(void)
 	}
 
 	iconv_close(icd);
+}
+
+Pixel scale_pixel(Pixel pixel, float scale)
+{
+	int red, green, blue;
+
+	red = pixel / ( 1 << 16 );
+	green = pixel % (1 << 16) / (1 << 8);
+	blue = pixel % (1 << 8);
+
+	red *= scale;
+	green *= scale;
+	blue *= scale;
+
+	return red * (1 << 16) + green * (1 << 8) + blue;
 }
 
 /*******************************************************************************\
@@ -270,7 +308,67 @@ void wmtime_routine(int argc, char **argv) {
 		free(conffile);
 	}
 
-	openXwindow(argc, argv, wmtime_master_xpm, wmtime_mask_bits, 128, 64);
+	/* set user-defined colors */
+	if (color[0] != 0) {
+		Window	Root;
+		XColor col;
+		XWindowAttributes attributes;
+		int screen;
+		Pixel pixel;
+#define NUMSYMBOLS 10
+		XpmColorSymbol user_color[NUMSYMBOLS] = {
+			{NULL, "#2081B2CAAEBA", 0}, /* O */
+			{NULL, "#000049244103", 0}, /* + */
+			{NULL, "#00007DF771C6", 0}, /* @ */
+			{NULL, "#18618A288617", 0}, /* # */
+			{NULL, "#18619A699658", 0}, /* ; */
+			{NULL, "#0820861779E7", 0}, /* : */
+			{NULL, "#000071C66185", 0}, /* > */
+			{NULL, "#000061855144", 0}, /* , */
+			{NULL, "#00004D344103", 0}, /* < */
+			{NULL, "#10407DF779E7", 0}  /* 1 */
+		};
+
+
+		/* code based on GetColor() from wmgeneral.c */
+		/* we need a temporary display to parse the color */
+		display = XOpenDisplay(NULL);
+		screen = DefaultScreen(display);
+		Root = RootWindow(display, screen);
+		XGetWindowAttributes(display, Root, &attributes);
+
+		col.pixel = 0;
+		if (!XParseColor(display, attributes.colormap, color, &col)) {
+			fprintf(stderr, "wmtime: can't parse %s.\n", color);
+			goto draw_window;
+		} else if (!XAllocColor(display, attributes.colormap, &col)) {
+			fprintf(stderr, "wmtime: can't allocate %s.\n", color);
+			goto draw_window;
+		}
+
+		pixel = col.pixel;
+
+		/* replace colors from wmtime-master.xpm */
+		user_color[0].pixel = pixel;
+		user_color[1].pixel = scale_pixel(pixel, .4);
+		user_color[2].pixel = scale_pixel(pixel, .7);
+		user_color[3].pixel = scale_pixel(pixel, .8);
+		user_color[4].pixel = scale_pixel(pixel, .9);
+		user_color[5].pixel = scale_pixel(pixel, .8);
+		user_color[6].pixel = scale_pixel(pixel, .6);
+		user_color[7].pixel = scale_pixel(pixel, .5);
+		user_color[8].pixel = scale_pixel(pixel, .4);
+		user_color[9].pixel = scale_pixel(pixel, .7);
+
+		wmgen.attributes.valuemask |= XpmColorSymbols;
+		wmgen.attributes.numsymbols = NUMSYMBOLS;
+		wmgen.attributes.colorsymbols = user_color;
+
+		XCloseDisplay(display);
+	}
+
+draw_window:
+	openXwindow(argc, argv, wmtime_master_xpm, (char*)wmtime_mask_bits, 128, 64);
 
 	/* Mask out the right parts of the clock */
 	copyXPMArea(0, 0, 128, 64, 0, 98);   /* Draw the borders */
@@ -375,8 +473,8 @@ void wmtime_routine(int argc, char **argv) {
 \*******************************************************************************/
 
 void DrawTime(int hr, int min, int sec) {
-	const int time_size = 16;
-	char	time[time_size];
+#define TIME_SIZE 16
+	char	time[TIME_SIZE];
 	char	*p = time;
 	int		i,j,k=6;
 	int numfields;
@@ -384,11 +482,11 @@ void DrawTime(int hr, int min, int sec) {
 	/* 7x13 */
 
 	if (noseconds) {
-		snprintf(time, time_size, "%02d:%02d ", hr, min);
+		snprintf(time, TIME_SIZE, "%02d:%02d ", hr, min);
 		numfields = 2;
 	}
 	else {
-		snprintf(time, time_size, "%02d:%02d:%02d ", hr, min, sec);
+		snprintf(time, TIME_SIZE, "%02d:%02d:%02d ", hr, min, sec);
 		numfields = 3;
 	}
 
@@ -411,14 +509,14 @@ void DrawTime(int hr, int min, int sec) {
 \*******************************************************************************/
 
 void DrawDate(int wkday, int dom, int month) {
-	const int date_size = 16;
-	char	date[date_size];
+#define DATE_SIZE 16
+	char	date[DATE_SIZE];
 	char	*p = date;
 	int		i,k;
 
 	/* 7x13 */
 
-	snprintf(date, date_size,
+	snprintf(date, DATE_SIZE,
 			"%.2s%02d%.3s  ", day_of_week[wkday], dom, mon_of_year[month]);
 
 	k = 5;
@@ -474,8 +572,8 @@ void DrawWijzer(int hr, int min, int sec) {
 	dx = floor(sin(psi) * 22 * 0.7 + 0.5);
 	dy = floor(-cos(psi) * 16 * 0.7 + 0.5);
 
-	// dx, dy is het punt waar we naar toe moeten.
-	// Zoek alle punten die ECHT op de lijn liggen:
+	/* dx, dy is het punt waar we naar toe moeten.
+	 * Zoek alle punten die ECHT op de lijn liggen: */
 
 	ddx = 1;
 	ddy = 1;
@@ -491,8 +589,8 @@ void DrawWijzer(int hr, int min, int sec) {
 		else
 			adder = 0;
 		for (i=0; i<abs(dx); i++) {
-			// laat de kleur afhangen van de adder.
-			// adder loopt van abs(dx) tot 0
+			/* laat de kleur afhangen van de adder.
+			 * adder loopt van abs(dx) tot 0 */
 
 			k = 12 - adder / (abs(dx) / 12.0);
 			copyXPMArea(79+k, 67, 1, 1, x + 31, y + 24 - ddy);
@@ -541,8 +639,8 @@ void DrawWijzer(int hr, int min, int sec) {
 	dx = floor(sin(psi) * 22 * 0.55 + 0.5);
 	dy = floor(-cos(psi) * 16 * 0.55 + 0.5);
 
-	// dx, dy is het punt waar we naar toe moeten.
-	// Zoek alle punten die ECHT op de lijn liggen:
+	/* dx, dy is het punt waar we naar toe moeten.
+	 * Zoek alle punten die ECHT op de lijn liggen: */
 
 	dx += dx;
 	dy += dy;
@@ -561,8 +659,8 @@ void DrawWijzer(int hr, int min, int sec) {
 		else
 			adder = 0;
 		for (i=0; i<abs(dx); i++) {
-			// laat de kleur afhangen van de adder.
-			// adder loopt van abs(dx) tot 0
+			/* laat de kleur afhangen van de adder.
+			 * adder loopt van abs(dx) tot 0 */
 
 			k = 12 - adder / (abs(dx) / 12.0);
 			copyXPMArea(79+k, 67, 1, 1, x + 31, y + 24 - ddy);
@@ -613,8 +711,8 @@ void DrawWijzer(int hr, int min, int sec) {
 	dx = floor(sin(psi) * 22 * 0.9 + 0.5);
 	dy = floor(-cos(psi) * 16 * 0.9 + 0.5);
 
-	// dx, dy is het punt waar we naar toe moeten.
-	// Zoek alle punten die ECHT op de lijn liggen:
+	/* dx, dy is het punt waar we naar toe moeten.
+	 * Zoek alle punten die ECHT op de lijn liggen: */
 
 	ddx = 1;
 	ddy = 1;
@@ -634,8 +732,8 @@ void DrawWijzer(int hr, int min, int sec) {
 		else
 			adder = 0;
 		for (i=0; i<abs(dx); i++) {
-			// laat de kleur afhangen van de adder.
-			// adder loopt van abs(dx) tot 0
+			/* laat de kleur afhangen van de adder.
+			 * adder loopt van abs(dx) tot 0 */
 
 			k = 12 - adder / (abs(dx) / 12.0);
 			copyXPMArea(79+k, 70, 1, 1, x + 31, y + 24 - ddy);
@@ -690,6 +788,7 @@ void usage(char *name) {
 	printf("  -l LOCALE            set locale to LOCALE\n");
 	printf("  -h                   display this help and exit\n");
 	printf("  -v                   output version information and exit\n");
+	printf("  -c                   set color\n");
 }
 
 /*******************************************************************************\
