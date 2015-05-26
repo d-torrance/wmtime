@@ -4,14 +4,15 @@ Upstream-Contact: Window Maker Developers Team <wmaker-dev@lists.windowmaker.org
 Source: http://windowmaker.org/dockapps/?name=wmtime
 
 Files: *
-Copyright: 1997, 1998 Martijn Pieterse and Antoine Nulle
-License: GPL-2
+Copyright: 1997, 1998 Martijn Pieterse <pieterse@xs4all.nl>
+	   1997, 1998 Antoine Nulle <warp@xs4all.nl>
+License: GPL-2+
 
 Files: wmtime.1
 Copyright: 2003 Software in the Public Interest, Inc.
 License: GPL-2+
 
-Files: wmgeneral/misc.c
+Files: wmgeneral/misc.*
 Copyright: 1997 Alfredo K. Kojima
 License: GPL-2+
 
@@ -19,30 +20,13 @@ Files: wmgeneral/list.*
 Copyright: 1993, 1994 Free Software Foundation, Inc.
 License: GPL-2+ with linking exception
 
+Files: wmgeneral/wmgeneral.*
+Copyright: 1998 Martijn Pieterse <pieterse@xs4all.nl>
+License: GPL-2+
+
 Files: debian/*
 Copyright: 2012 Doug Torrance
 License: GPL-2+
-
-License: GPL-2
- This program is free software; you can redistribute it
- and/or modify it under the terms of the GNU General Public
- License as published by the Free Software Foundation; either
- version 2 of the License.
- .
- This program is distributed in the hope that it will be
- useful, but WITHOUT ANY WARRANTY; without even the implied
- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.  See the GNU General Public License for more
- details.
- .
- You should have received a copy of the GNU General Public
- License along with this package; if not, write to the Free
- Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- Boston, MA  02110-1301 USA
- .
- On Debian systems, the full text of the GNU General Public
- License version 2 can be found in the file
- `/usr/share/common-licenses/GPL-2'.
 
 License: GPL-2+
  This program is free software; you can redistribute it
