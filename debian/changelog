@@ -1,10 +1,13 @@
-wmtime (1.3-1) UNRELEASED; urgency=medium
+wmtime (1.3-1) unstable; urgency=medium
 
   * New upstream release.
     - Includes new version of wmgeneral library that builds with gcc5
       (Closes: #778174).
+  * debian/copyright
+    - Clarify license information for wmgeneral files; wmtime files are GPL-2+,
+      not GPL-2.
 
- -- Doug Torrance <dtorrance@monmouthcollege.edu>  Tue, 26 May 2015 08:42:49 -0500
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Tue, 26 May 2015 18:06:43 -0500
 
 wmtime (1.2-1) unstable; urgency=medium
 
